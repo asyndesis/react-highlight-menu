@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
 import styled from "@emotion/styled";
-
-const PopperWrapper = styled.div`
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #ccc;
+import { useTextSelection } from "./";
+const PopoverWrapper = styled.div`
+  border: 1px solid #cccccc;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   background-color: white;
   min-height: 0;
@@ -33,7 +34,7 @@ const PopperWrapper = styled.div`
   &[data-popper-placement^="bottom"] > .popper-arrow {
     top: 0;
     :after {
-      box-shadow: -1px -1px 1px #ccc;
+      box-shadow: -1px -1px 1px #cccccc;
       inset: -5px auto auto 0px;
     }
   }
@@ -42,7 +43,7 @@ const PopperWrapper = styled.div`
     bottom: 0;
     :after {
       inset: auto 0px -5px auto;
-      box-shadow: 1px 1px 1px #ccc;
+      box-shadow: 1px 1px 1px #cccccc;
     }
   }
 
@@ -50,7 +51,7 @@ const PopperWrapper = styled.div`
     left: 0;
     :after {
       inset: auto 5px auto auto;
-      box-shadow: -1px 1px 1px #ccc;
+      box-shadow: -1px 1px 1px #cccccc;
     }
   }
 
@@ -58,18 +59,25 @@ const PopperWrapper = styled.div`
     right: -5px;
     :after {
       inset: auto auto auto auto;
-      box-shadow: 1px -1px 1px #ccc;
+      box-shadow: 1px -1px 1px #cccccc;
     }
   }
 `;
 
-const Popper = ({ anchorPos, children, showPopper, setShowPopper }) => {
-  console.log(anchorPos);
+const Portal = ({ children, container }) => {
+  const mountNode = container?.current || container || document.body;
+  return mountNode && createPortal(children, mountNode);
+};
+
+const HighlightMenu = ({ menu, target }) => {
+  const selection = useTextSelection(target);
+  const { clientRect, isRootNode } = selection || {};
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
+
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: "auto",
+    placement: "top",
     modifiers: [
       {
         name: "arrow",
@@ -77,161 +85,44 @@ const Popper = ({ anchorPos, children, showPopper, setShowPopper }) => {
       },
     ],
   });
+
   return (
-    <>
+    <Portal>
       <div
         ref={setReferenceElement}
         style={{
-          top: anchorPos?.top,
-          left: anchorPos?.left + anchorPos?.width / 2,
-          width: 1,
-          height: 1,
-          position: "fixed",
+          top: clientRect?.top,
+          left: clientRect?.left,
+          width: clientRect?.width,
+          height: clientRect?.height,
+          position: isRootNode ? "absolute" : "fixed",
           userSelect: "none",
+          pointerEvents: "none",
         }}
       />
-      {showPopper && (
-        <PopperWrapper
+      {clientRect && (
+        <PopoverWrapper
           ref={setPopperElement}
           style={styles.popper}
           {...attributes.popper}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseUp={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
         >
-          {children}
+          {menu(selection)}
           <div
             ref={setArrowElement}
             style={styles.arrow}
             className="popper-arrow"
           />
-        </PopperWrapper>
+        </PopoverWrapper>
       )}
-    </>
-  );
-};
-
-const HighlightMenu = ({ children }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [anchorPos, setAnchorPos] = useState(false);
-
-  function useGetSelection() {
-    const selectedFragments = selectionExists()
-      ? window?.getSelection().getRangeAt(0)?.cloneContents()
-      : null;
-    const serializer = new XMLSerializer();
-    const currentSelectedHtml = selectedFragments
-      ? serializer.serializeToString(selectedFragments)
-      : "";
-    const currentSelectedText = selectionExists()
-      ? window?.getSelection()?.toString()
-      : "";
-
-    return { currentSelectedHtml, currentSelectedText };
-  }
-
-  function setClipboard({ htmlContent, textContent }, callback) {
-    const selectedText = htmlContent || textContent;
-    if (!navigator?.clipboard) return false;
-    if (navigator.clipboard.write) {
-      /* Chrome, IE */
-      const { ClipboardItem } = window || {};
-      const type = "text/html";
-      const data = new Blob([selectedText], { type });
-      const item = new ClipboardItem({ [type]: data });
-      return navigator.clipboard.write([item]).then(callback);
-    } else {
-      /* FF: TODO: Make this support HTML. (Not sure how, so just use text) */
-      return navigator.clipboard.writeText(textContent).then(callback);
-    }
-  }
-
-  function selectionExists() {
-    if (typeof window === "undefined") return false;
-    const selection = window.getSelection();
-    return (
-      selection &&
-      selection.rangeCount > 0 &&
-      selection.getRangeAt(0) &&
-      !selection.getRangeAt(0).collapsed &&
-      selection.getRangeAt(0).getBoundingClientRect().width > 0 &&
-      selection.getRangeAt(0).getBoundingClientRect().height > 0
-    );
-  }
-
-  function clearSelection() {
-    if (typeof window === "undefined") return false;
-    if (window.getSelection) {
-      window.getSelection().removeAllRanges();
-    } else if (document.selection) {
-      document.selection.empty();
-    }
-  }
-
-  // function eventInsideTargetSelector(e) {
-  //   return targetSelector && e?.target?.closest(targetSelector);
-  // }
-
-  function updateAnchorPos() {
-    if (!selectionExists()) return;
-    const selection = window?.getSelection();
-    const selectionBox = selection?.getRangeAt(0)?.getBoundingClientRect();
-    setAnchorPos(selectionBox);
-  }
-
-  function handleMouseUp(e) {
-    updateAnchorPos();
-    if (selectionExists()) setShowMenu(true);
-  }
-
-  function handleMouseDown(e) {
-    setTimeout(() => !selectionExists() && setShowMenu(false), 1);
-  }
-
-  function handleSetClipboard() {
-    setClipboard(
-      {
-        htmlContent: currentSelectedHtml,
-        textContent: currentSelectedText,
-      },
-      () => {
-        clearSelection();
-      }
-    );
-  }
-
-  useEffect(() => {
-    document.addEventListener("scroll", updateAnchorPos);
-    document.addEventListener("resize", updateAnchorPos);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousedown", handleMouseDown);
-    return () => {
-      document.removeEventListener("scroll", updateAnchorPos);
-      document.removeEventListener("resize", updateAnchorPos);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousedown", handleMouseDown);
-    };
-  });
-
-  const { currentSelectedHtml, currentSelectedText } = useGetSelection();
-
-  return (
-    <>
-      <Popper
-        anchorPos={anchorPos}
-        key={JSON.stringify(anchorPos)}
-        showPopper={showMenu}
-        setShowPopper={setShowMenu}
-      >
-        <div>
-          <button
-            onClick={() => {
-              //setShowMenu(false);
-            }}
-          >
-            A
-          </button>
-        </div>
-      </Popper>
-      {children}
-    </>
+    </Portal>
   );
 };
 

@@ -1,2 +1,3 @@
 import HighlightMenu from "./HighlightMenu";
-export { HighlightMenu };
+import useTextSelection from "./useTextSelection";
+export { HighlightMenu, useTextSelection };
