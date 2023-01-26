@@ -20,7 +20,8 @@ function getSelection() {
   const range = selection?.getRangeAt(0);
   const selectedHtml = Serializer.serializeToString(range?.cloneContents());
   const selectedText = selection?.toString();
-  const selectedNode = range?.commonAncestorContainer?.parentNode;
+  const selectedNode =
+    selection?.anchorNode || range?.commonAncestorContainer?.parentNode;
 
   return {
     range,
@@ -32,12 +33,10 @@ function getSelection() {
 
 function isTargetInSelection(targets, selection) {
   if (!targets?.length) return true;
-  return Array.from(targets)?.some((t) =>
-    t?.contains(selection?.range.commonAncestorContainer)
-  );
+  return Array.from(targets)?.some((t) => t?.contains(selection?.selectedNode));
 }
 
-export function useTextSelection(target) {
+export function useTextSelection(target, position) {
   const [state, setState] = useState();
 
   const updateAnchorPos = () => {
@@ -64,7 +63,7 @@ export function useTextSelection(target) {
     document.addEventListener("mouseup", updateAnchorPos);
     document.addEventListener("selectionchange", onSelectionChange);
     window.addEventListener("resize", updateAnchorPos);
-    !state?.isRootNode &&
+    position === "fixed" &&
       document.addEventListener("scroll", onWindowScroll, {
         capture: true,
       });
@@ -72,10 +71,13 @@ export function useTextSelection(target) {
       document.removeEventListener("mouseup", updateAnchorPos);
       document.removeEventListener("selectionchange", onSelectionChange);
       window.removeEventListener("resize", updateAnchorPos);
-      document.removeEventListener("scroll", onWindowScroll, { capture: true });
+      position === "fixed" &&
+        document.removeEventListener("scroll", onWindowScroll, {
+          capture: true,
+        });
     };
     //eslint-disable-next-line
-  }, [target, state?.isRootNode]);
+  }, [target, position]);
 
   return {
     ...state,

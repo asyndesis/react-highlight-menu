@@ -4,14 +4,23 @@ import { usePopper } from "react-popper";
 import styled from "@emotion/styled";
 import { useTextSelection } from "./";
 
+const PopoverOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  z-index: 10000;
+  inset: 0 0 0 0;
+  user-select: none;
+`;
+
 const PopoverWrapper = styled.div`
+  pointer-events: all;
   border: 1px solid #cccccc;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   background-color: white;
   min-height: 0;
   z-index: 10000;
-  padding: 20px;
+  padding: 10px;
   .popper-arrow {
     z-index: 0;
     position: absolute;
@@ -70,11 +79,16 @@ const Portal = ({ children, container }) => {
   return mountNode && createPortal(children, mountNode);
 };
 
-const getClientRectWithScroll = ({ range, position, selectedNode }) => {
-  if (!range || !selectedNode) return;
+const getClientRectWithScroll = ({ range, position }) => {
+  if (!range) return;
   const clientRect = range?.getBoundingClientRect();
   return position === "fixed"
-    ? clientRect
+    ? {
+        top: clientRect.top,
+        left: clientRect.left,
+        width: clientRect.width,
+        height: clientRect.height,
+      }
     : {
         top: clientRect.top + window?.scrollY,
         left: clientRect.left + window?.scrollX,
@@ -83,9 +97,9 @@ const getClientRectWithScroll = ({ range, position, selectedNode }) => {
       };
 };
 
-const HighlightMenu = ({ menu, target, position }) => {
-  const selection = useTextSelection(target);
-  const { range, selectedNode } = selection || {};
+const HighlightMenu = ({ menu, target, position = "absolute" }) => {
+  const selection = useTextSelection(target, position);
+  const { range } = selection || {};
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
@@ -101,45 +115,47 @@ const HighlightMenu = ({ menu, target, position }) => {
   });
 
   const clientRect = getClientRectWithScroll({
-    selectedNode,
     position,
     range,
   });
 
   return (
-    <Portal container={position === "fixed" ? null : selectedNode}>
-      <div
-        ref={setReferenceElement}
-        style={{
-          ...clientRect,
-          position: position,
-          userSelect: "none",
-          pointerEvents: "none",
-        }}
-      />
-      {clientRect && (
-        <PopoverWrapper
-          ref={setPopperElement}
-          style={styles.popper}
-          {...attributes.popper}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
+    <>
+      <PopoverOverlay id="highhigh" />
+      <Portal container={document.getElementById("highhigh")}>
+        <div
+          ref={setReferenceElement}
+          style={{
+            ...clientRect,
+            position: position,
+            userSelect: "none",
+            pointerEvents: "none",
           }}
-          onMouseUp={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
-        >
-          {menu(selection)}
-          <div
-            ref={setArrowElement}
-            style={styles.arrow}
-            className="popper-arrow"
-          />
-        </PopoverWrapper>
-      )}
-    </Portal>
+        />
+        {clientRect && (
+          <PopoverWrapper
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+            onMouseUp={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            {menu(selection)}
+            <div
+              ref={setArrowElement}
+              style={styles.arrow}
+              className="popper-arrow"
+            />
+          </PopoverWrapper>
+        )}
+      </Portal>
+    </>
   );
 };
 
