@@ -9,41 +9,6 @@ function resolveTargets(target) {
   return [];
 }
 
-function getScrollOffsets(node, { top = 0, left = 0 } = {}) {
-  if (node == null) {
-    return { left, top };
-  }
-  return getScrollOffsets(node?.parentNode, {
-    left: left + (node?.scrollLeft || 0),
-    top: top + (node?.scrollTop || 0),
-  });
-}
-
-function checkIfRootNode(node, isRoot) {
-  if (node.scrollHeight > node.clientHeight || !node) {
-    return isRoot;
-  }
-  return checkIfRootNode(
-    node?.parentNode,
-    ["BODY", "HTML"]?.includes(node?.tagName)
-  );
-}
-
-const getClientRectWithScroll = (range) => {
-  const { top, left } = getScrollOffsets(
-    range?.commonAncestorContainer?.parentNode
-  );
-  const rect = range?.getBoundingClientRect();
-  return {
-    top: rect.top + top,
-    left: rect.left + left,
-    x: rect.x,
-    y: rect.y,
-    width: rect.width,
-    height: rect.height,
-  };
-};
-
 function hasSelection() {
   const selection = window?.getSelection();
   return !selection?.isCollapsed;
@@ -55,18 +20,13 @@ function getSelection() {
   const range = selection?.getRangeAt(0);
   const selectedHtml = Serializer.serializeToString(range?.cloneContents());
   const selectedText = selection?.toString();
-  const isRootNode = checkIfRootNode(
-    range?.commonAncestorContainer?.parentNode
-  );
-  const clientRect = isRootNode
-    ? getClientRectWithScroll(range)
-    : range?.getBoundingClientRect(); /* How do we calculate subscroll */
+  const selectedNode = range?.commonAncestorContainer?.parentNode;
+
   return {
     range,
+    selectedNode,
     selectedHtml,
     selectedText,
-    clientRect,
-    isRootNode,
   };
 }
 
@@ -95,27 +55,27 @@ export function useTextSelection(target) {
     }
   };
 
-  const listenScroll = () => {
-    if (!state?.isRootNode) {
-      updateAnchorPos();
-    }
+  const onWindowScroll = (e) => {
+    updateAnchorPos();
+    window.dispatchEvent(new CustomEvent("scroll"));
   };
 
   useLayoutEffect(() => {
     document.addEventListener("mouseup", updateAnchorPos);
     document.addEventListener("selectionchange", onSelectionChange);
     window.addEventListener("resize", updateAnchorPos);
-    window.addEventListener("scroll", listenScroll, { capture: true });
+    !state?.isRootNode &&
+      document.addEventListener("scroll", onWindowScroll, {
+        capture: true,
+      });
     return () => {
       document.removeEventListener("mouseup", updateAnchorPos);
       document.removeEventListener("selectionchange", onSelectionChange);
       window.removeEventListener("resize", updateAnchorPos);
-      window.removeEventListener("scroll", listenScroll, {
-        capture: true,
-      });
+      document.removeEventListener("scroll", onWindowScroll, { capture: true });
     };
     //eslint-disable-next-line
-  }, [target]);
+  }, [target, state?.isRootNode]);
 
   return {
     ...state,

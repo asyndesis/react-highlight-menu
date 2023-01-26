@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
 import styled from "@emotion/styled";
 import { useTextSelection } from "./";
+
 const PopoverWrapper = styled.div`
   border: 1px solid #cccccc;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
@@ -69,9 +70,22 @@ const Portal = ({ children, container }) => {
   return mountNode && createPortal(children, mountNode);
 };
 
-const HighlightMenu = ({ menu, target }) => {
+const getClientRectWithScroll = ({ range, position, selectedNode }) => {
+  if (!range || !selectedNode) return;
+  const clientRect = range?.getBoundingClientRect();
+  return position === "fixed"
+    ? clientRect
+    : {
+        top: clientRect.top + window?.scrollY,
+        left: clientRect.left + window?.scrollX,
+        width: clientRect.width,
+        height: clientRect.height,
+      };
+};
+
+const HighlightMenu = ({ menu, target, position }) => {
   const selection = useTextSelection(target);
-  const { clientRect, isRootNode } = selection || {};
+  const { range, selectedNode } = selection || {};
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
@@ -86,16 +100,19 @@ const HighlightMenu = ({ menu, target }) => {
     ],
   });
 
+  const clientRect = getClientRectWithScroll({
+    selectedNode,
+    position,
+    range,
+  });
+
   return (
-    <Portal>
+    <Portal container={position === "fixed" ? null : selectedNode}>
       <div
         ref={setReferenceElement}
         style={{
-          top: clientRect?.top,
-          left: clientRect?.left,
-          width: clientRect?.width,
-          height: clientRect?.height,
-          position: isRootNode ? "absolute" : "fixed",
+          ...clientRect,
+          position: position,
           userSelect: "none",
           pointerEvents: "none",
         }}

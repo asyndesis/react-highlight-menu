@@ -4,6 +4,7 @@ const Example = () => {
   return (
     <>
       <HighlightMenu
+        position="absolute"
         target={".yarf"}
         menu={({ clientRect, selectedHtml, selectedText }) => (
           <div style={{ display: "flex", gap: 4 }}>
