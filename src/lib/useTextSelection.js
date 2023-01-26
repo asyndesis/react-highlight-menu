@@ -20,12 +20,11 @@ function getSelection() {
   const range = selection?.getRangeAt(0);
   const selectedHtml = Serializer.serializeToString(range?.cloneContents());
   const selectedText = selection?.toString();
-  const selectedNode =
-    selection?.anchorNode || range?.commonAncestorContainer?.parentNode;
-
   return {
+    baseNode: selection?.baseNode,
+    baseOffset: selection?.baseOffset,
+    extentNode: selection?.extentNode,
     range,
-    selectedNode,
     selectedHtml,
     selectedText,
   };
@@ -33,7 +32,7 @@ function getSelection() {
 
 function isTargetInSelection(targets, selection) {
   if (!targets?.length) return true;
-  return Array.from(targets)?.some((t) => t?.contains(selection?.selectedNode));
+  return Array.from(targets)?.some((t) => t?.contains(selection?.baseNode));
 }
 
 export function useTextSelection(target, position) {

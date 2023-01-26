@@ -97,7 +97,12 @@ const getClientRectWithScroll = ({ range, position }) => {
       };
 };
 
-const HighlightMenu = ({ menu, target, position = "absolute" }) => {
+const HighlightMenu = ({
+  menu,
+  target,
+  position = "absolute",
+  containerId = "react-highlight-menu-container",
+}) => {
   const selection = useTextSelection(target, position);
   const { range } = selection || {};
   const [referenceElement, setReferenceElement] = useState(null);
@@ -119,10 +124,12 @@ const HighlightMenu = ({ menu, target, position = "absolute" }) => {
     range,
   });
 
+  const containerEl = document.getElementById(containerId);
+
   return (
     <>
       <PopoverOverlay id="highhigh" />
-      <Portal container={document.getElementById("highhigh")}>
+      <Portal container={containerEl}>
         <div
           ref={setReferenceElement}
           style={{

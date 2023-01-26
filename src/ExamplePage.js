@@ -26,7 +26,13 @@ const Lorem = (props) => (
       target={".highlight-menu"}
       menu={({ clientRect, selectedHtml, selectedText }) => (
         <Flex gap="2">
-          <IconButton aria-label="Copy" icon={<CopyIcon />} />
+          <IconButton
+            aria-label="Copy"
+            onClick={() => {
+              console.log(selectedHtml);
+            }}
+            icon={<CopyIcon />}
+          />
           <IconButton aria-label="Search" icon={<SearchIcon />} />
         </Flex>
       )}
