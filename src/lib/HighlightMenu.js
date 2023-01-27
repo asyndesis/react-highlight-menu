@@ -1,16 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
 import styled from "@emotion/styled";
 import { useTextSelection } from "./";
-
-const PopoverOverlay = styled.div`
-  pointer-events: none;
-  position: absolute;
-  z-index: 10000;
-  inset: 0 0 0 0;
-  user-select: none;
-`;
 
 const PopoverWrapper = styled.div`
   pointer-events: all;
@@ -19,7 +11,7 @@ const PopoverWrapper = styled.div`
   border-radius: 5px;
   background-color: white;
   min-height: 0;
-  z-index: 10000;
+  z-index: 10;
   padding: 10px;
   .popper-arrow {
     z-index: 0;
@@ -79,28 +71,31 @@ const Portal = ({ children, container }) => {
   return mountNode && createPortal(children, mountNode);
 };
 
-const getClientRectWithScroll = ({ range, position }) => {
+const getPopoverCoordinates = ({ range, position }) => {
   if (!range) return;
-  const clientRect = range?.getBoundingClientRect();
-  return position === "fixed"
-    ? {
-        top: clientRect.top,
-        left: clientRect.left,
-        width: clientRect.width,
-        height: clientRect.height,
-      }
-    : {
-        top: clientRect.top + window?.scrollY,
-        left: clientRect.left + window?.scrollX,
-        width: clientRect.width,
-        height: clientRect.height,
-      };
+  const isAbsolute = position === "absolute";
+  const clientRect = range?.getBoundingClientRect() || {};
+  return {
+    /* Add the scroll if we are in fixed mode */
+    top: clientRect.top + (isAbsolute ? window?.scrollY : 0),
+    left: clientRect.left + (isAbsolute ? window?.scrollX : 0),
+    width: clientRect.width,
+    height: clientRect.height,
+  };
+};
+
+const createContainerEl = ({ containerId, zIndex }) => {
+  let el = document.createElement("div");
+  el.style.cssText += `pointer-events:none;position:absolute;inset: 0 0 0 0;user-select:none;z-index:${zIndex}`;
+  el.setAttribute("id", containerId);
+  document.body.appendChild(el);
 };
 
 const HighlightMenu = ({
   menu,
   target,
   position = "absolute",
+  zIndex = 10,
   containerId = "react-highlight-menu-container",
 }) => {
   const selection = useTextSelection(target, position);
@@ -108,6 +103,7 @@ const HighlightMenu = ({
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: "top",
@@ -119,17 +115,27 @@ const HighlightMenu = ({
     ],
   });
 
-  const clientRect = getClientRectWithScroll({
+  const clientRect = getPopoverCoordinates({
     position,
     range,
   });
 
-  const containerEl = document.getElementById(containerId);
+  /* When the selection changes, the menu will show. */
+  useEffect(() => {
+    setMenuOpen(clientRect);
+    //eslint-disable-next-line
+  }, [JSON.stringify(clientRect)]);
+
+  /* Even if multiple HighlightMenu on page, we only create the container element one time */
+  useEffect(() => {
+    if (!document.getElementById(containerId))
+      createContainerEl({ containerId, zIndex });
+    //eslint-disable-next-line
+  }, []);
 
   return (
     <>
-      <PopoverOverlay id="highhigh" />
-      <Portal container={containerEl}>
+      <Portal container={document.getElementById(containerId)}>
         <div
           ref={setReferenceElement}
           style={{
@@ -139,7 +145,7 @@ const HighlightMenu = ({
             pointerEvents: "none",
           }}
         />
-        {clientRect && (
+        {menuOpen && (
           <PopoverWrapper
             ref={setPopperElement}
             style={styles.popper}
@@ -153,7 +159,10 @@ const HighlightMenu = ({
               e.preventDefault();
             }}
           >
-            {menu(selection)}
+            {
+              /* Here is where we can provide an API for the menu item clickEvents */
+              menu({ ...selection, setMenuOpen })
+            }
             <div
               ref={setArrowElement}
               style={styles.arrow}

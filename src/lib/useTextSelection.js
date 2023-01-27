@@ -5,8 +5,8 @@ function resolveTargets(target) {
   if (typeof target === "string") {
     return document.querySelectorAll(target);
   }
-  /* TODO: Support Refs */
-  return [];
+  /* For ref targets */
+  return [target?.current];
 }
 
 function hasSelection() {
@@ -48,7 +48,7 @@ export function useTextSelection(target, position) {
 
   const onSelectionChange = () => {
     const selection = getSelection();
-    if (!selection?.clientRect) {
+    if (!selection?.range) {
       setState({});
     }
   };
