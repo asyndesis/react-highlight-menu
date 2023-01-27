@@ -9,13 +9,8 @@ import {
   Heading,
   Text,
   Card,
-  CardHeader,
-  Tabs,
-  TabList,
-  TabPanel,
-  Tab,
-  TabPanels,
   Tooltip,
+  CardBody,
 } from "@chakra-ui/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -55,87 +50,55 @@ const menu = ({ selectedText, setMenuOpen }) => (
 function ExamplePage() {
   return (
     <ChakraProvider>
-      <Flex flexDirection="column" gap={4} p={4}>
+      <Card gap={2} p={4} m={4}>
         <Example1 />
         <Example2 />
-      </Flex>
+      </Card>
     </ChakraProvider>
   );
 }
 
 const Example1 = () => (
-  <Card>
-    <HighlightMenu target={".highlight-menu"} menu={menu} />
-    <CardHeader>
-      <Heading size="md">The `target` attribute as a className</Heading>
-    </CardHeader>
-    <Tabs>
-      <TabList>
-        <Tab>Demo</Tab>
-        <Tab>Code</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel className="highlight-menu">
-          On the Coast of Coromandel Where the early pumpkins blow, In the
-          middle of the woods Lived the Yonghy-Bonghy-Bo. Two old chairs, and
-          half a candle, One old jug without a handle-- These were all his
-          worldly goods, In the middle of the woods, These were all his worldly
-          goods, Of the Yonghy-Bonghy-Bo, Of the Yonghy-Bonghy Bo.
-        </TabPanel>
-        <TabPanel>
-          <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
-            {`<HighlightMenu
-  target={".highlight-menu"}
-  menu={({ selectedText, setMenuOpen, selectedHtml }) => <>Menu buttons</>}
-/>
-<div className="highlight-menu">
-  The highlight event must start in this box in order for the popover to show...
-</div>
-`}
-          </SyntaxHighlighter>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  </Card>
+  <CardBody>
+    <HighlightMenu target={".highlight-menu"} menu={menu} position="fixed" />
+    <Heading size="md">Target a specific className</Heading>
+    <Box className="highlight-menu">
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+        {`const Example1 = () => {
+  return (
+    <div className="highlight-menu">
+      Selecting this text will show the menu!
+    </div>
+    <HighlightMenu
+      target={".highlight-menu"}
+      menu={({ selectedText, setMenuOpen, selectedHtml }) => <>Menu buttons</>} />
+  );
+};`}
+      </SyntaxHighlighter>
+    </Box>
+  </CardBody>
 );
 
 const Example2 = () => {
   const menuRef = useRef();
   return (
-    <Card>
+    <CardBody>
       <HighlightMenu target={menuRef} menu={menu} />
-      <CardHeader>
-        <Heading size="md">The `target` attribute as a ref</Heading>
-      </CardHeader>
-      <Tabs>
-        <TabList>
-          <Tab>Demo</Tab>
-          <Tab>Code</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel ref={menuRef}>
-            Once, among the Bong-trees walking Where the early pumpkins blow, To
-            a little heap of stones Came the Yonghy-Bonghy-Bo. There he heard a
-            Lady talking, To some milk-white Hens of Dorking-- "'Tis the Lady
-            Jingly Jones! On that little heap of stones Sits the Lady Jingly
-            Jones!" Said the Yonghy-Bonghy-Bo, Said the Yonghy-Bonghy-Bo.
-          </TabPanel>
-          <TabPanel>
-            <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
-              {`const Example2 = () => {
+      <Heading size="md">The `target` attribute as a ref</Heading>
+      <Box ref={menuRef}>
+        <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+          {`const Example2 = () => {
   const menuRef = useRef();
   return (
     <div ref={menuRef}>
-      The highlight event must start in this box in order for the popover to show...
+      Selecting this text will show the menu!
     </div>
     <HighlightMenu target={menuRef} menu={menu} />
   );
 };`}
-            </SyntaxHighlighter>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </Card>
+        </SyntaxHighlighter>
+      </Box>
+    </CardBody>
   );
 };
 
