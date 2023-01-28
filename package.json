@@ -1,6 +1,6 @@
 {
   "name": "react-highlight-menu",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -12,6 +12,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/asyndesis/react-highlight-menu"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "homepage": "https://asyndesis.github.io/react-highlight-menu",
   "dependencies": {
