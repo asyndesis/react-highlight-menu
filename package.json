@@ -1,6 +1,6 @@
 {
   "name": "react-highlight-menu",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -12,9 +12,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/asyndesis/react-highlight-menu"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   },
   "homepage": "https://asyndesis.github.io/react-highlight-menu",
   "dependencies": {
@@ -35,10 +32,9 @@
     "start": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:npm": "rm -rf dist && rm -rf build && NODE_ENV=production babel src/lib --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,__snapshots__",
-    "build:github": "react-scripts build",
-    "predeploy": "npm run build:github",
-    "deploy": "gh-pages -d build"
+    "build:package": "rm -rf dist && rm -rf build && NODE_ENV=production babel src/lib --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,__snapshots__",
+    "build:pages": "react-scripts build",
+    "deploy:pages": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

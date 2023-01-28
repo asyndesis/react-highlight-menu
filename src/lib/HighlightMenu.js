@@ -80,14 +80,13 @@ const Portal = ({ children, container }) => {
   return mountNode && createPortal(children, mountNode);
 };
 
-const getPopoverCoordinates = ({ range, position }) => {
+const getPopoverCoordinates = (range) => {
   if (!range) return;
-  const isAbsolute = position === "absolute";
   const clientRect = range?.getBoundingClientRect() || {};
   return {
     /* Add the scroll if we are in fixed mode */
-    top: clientRect.top + (isAbsolute ? window?.scrollY : 0),
-    left: clientRect.left + (isAbsolute ? window?.scrollX : 0),
+    top: clientRect.top,
+    left: clientRect.left,
     width: clientRect.width,
     height: clientRect.height,
   };
@@ -121,12 +120,11 @@ function setClipboard(
 const HighlightMenu = ({
   menu,
   target,
-  position = "absolute",
   zIndex = 10,
   containerId = "react-highlight-menu-container",
   style,
 }) => {
-  const selection = useTextSelection(target, position);
+  const selection = useTextSelection(target);
   const { range } = selection || {};
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
@@ -147,10 +145,7 @@ const HighlightMenu = ({
     }
   );
 
-  const clientRect = getPopoverCoordinates({
-    position,
-    range,
-  });
+  const clientRect = getPopoverCoordinates(range);
 
   /* When the selection changes, the menu will show. */
   useEffect(() => {
@@ -172,7 +167,7 @@ const HighlightMenu = ({
           ref={setReferenceElement}
           style={{
             ...clientRect,
-            position: position,
+            position: "fixed",
             userSelect: "none",
             pointerEvents: "none",
           }}

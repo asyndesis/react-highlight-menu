@@ -35,7 +35,7 @@ function isTargetInSelection(targets, selection) {
   return Array.from(targets)?.some((t) => t?.contains(selection?.baseNode));
 }
 
-export function useTextSelection(target, position) {
+export function useTextSelection(target) {
   const [state, setState] = useState();
   const updateAnchorPos = () => {
     const targets = resolveTargets(target);
@@ -61,21 +61,19 @@ export function useTextSelection(target, position) {
     document.addEventListener("mouseup", updateAnchorPos);
     document.addEventListener("selectionchange", onSelectionChange);
     window.addEventListener("resize", updateAnchorPos);
-    position === "fixed" &&
-      document.addEventListener("scroll", onWindowScroll, {
-        capture: true,
-      });
+    document.addEventListener("scroll", onWindowScroll, {
+      capture: true,
+    });
     return () => {
       document.removeEventListener("mouseup", updateAnchorPos);
       document.removeEventListener("selectionchange", onSelectionChange);
       window.removeEventListener("resize", updateAnchorPos);
-      position === "fixed" &&
-        document.removeEventListener("scroll", onWindowScroll, {
-          capture: true,
-        });
+      document.removeEventListener("scroll", onWindowScroll, {
+        capture: true,
+      });
     };
     //eslint-disable-next-line
-  }, [target, position]);
+  }, [target]);
 
   return {
     ...state,
