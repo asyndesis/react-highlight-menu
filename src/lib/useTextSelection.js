@@ -37,7 +37,6 @@ function isTargetInSelection(targets, selection) {
 
 export function useTextSelection(target, position) {
   const [state, setState] = useState();
-
   const updateAnchorPos = () => {
     const targets = resolveTargets(target);
     const selection = getSelection();

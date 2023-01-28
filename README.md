@@ -1,6 +1,6 @@
 # react-highlight-menu
 
-A highlight menu like on medium
+A highlight menu like on medium. More docs to come.
 
 ## Installation
 
