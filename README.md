@@ -2,7 +2,8 @@
 
 ![preview](https://asyndesis.github.io/react-highlight-menu/preview.png)
 
-A highlight menu like on medium.
+A context menu that appears after highlighting or selecting text.
+_Similar to how the menu on Medium works._
 
 - [Demo](https://asyndesis.github.io/react-highlight-menu/) - Icons from [ChakraUI](https://chakra-ui.com/)
 
