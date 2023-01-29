@@ -104,17 +104,8 @@ function setClipboard(
   { onSuccess = () => {}, onError = () => {} } = {}
 ) {
   if (!navigator?.clipboard) return false;
-  if (navigator.clipboard.write) {
-    /* Chrome, IE */
-    const { ClipboardItem } = window || {};
-    const type = "text/html";
-    const data = new Blob([selection], { type });
-    const item = new ClipboardItem({ [type]: data });
-    return navigator.clipboard.write([item]).then(onSuccess, onError);
-  } else {
-    /* FF: TODO: Make this support HTML. (Not sure how, so just use text) */
-    return navigator.clipboard.writeText(selection).then(onSuccess, onError);
-  }
+  /* TODO: make this function more powerful */
+  return navigator.clipboard.writeText(selection).then(onSuccess, onError);
 }
 
 const HighlightMenu = ({

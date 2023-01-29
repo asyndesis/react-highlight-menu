@@ -46,15 +46,15 @@ const MENU_STYLES = {
 
 const useGetMenu =
   (styleColor) =>
-  ({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => {
+  ({ selectedText, setMenuOpen, setClipboard }) => {
     const color = styleColor === "white" ? null : styleColor;
     return (
       <Flex gap="1">
         <Tooltip label="Copy text" hasArrow>
           <IconButton
             colorScheme={color}
-            onClick={() => {
-              setClipboard(selectedHtml, () => {
+            onClick={async () => {
+              setClipboard(selectedText, () => {
                 alert("Copied to clipboard");
               });
             }}
@@ -201,14 +201,13 @@ const Code = ({
       ${
         showMenu
           ? `menu={({
-        selectedHtml, 
         selectedText,
         setMenuOpen,
         setClipboard, 
       }) => 
         <Flex>
           <CopyButton
-            onClick={() => setClipboard(selectedHtml, () => {
+            onClick={() => setClipboard(selectedText, () => {
               alert("Copied to clipboard");
             })}
           />

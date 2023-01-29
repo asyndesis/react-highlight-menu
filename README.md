@@ -27,9 +27,9 @@ export default function App() {
     <div className="app">
       <HighlightMenu
         target=".app"
-        menu={({ selectedHtml, setClipboard, setMenuOpen }) => (
+        menu={({ selectedText, setClipboard, setMenuOpen }) => (
           <React.Fragment>
-            <button type="button" onClick={() => setClipboard(selectedHtml)}>
+            <button type="button" onClick={() => setClipboard(selectedText)}>
               📋
             </button>
             <button type="button" onClick={() => setMenuOpen(false)}>
