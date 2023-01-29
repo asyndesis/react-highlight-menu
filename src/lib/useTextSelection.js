@@ -31,7 +31,7 @@ function getSelection() {
 }
 
 function isTargetInSelection(targets, selection) {
-  if (!targets?.length) return true;
+  if (!targets?.length) return false;
   return Array.from(targets)?.some((t) => t?.contains(selection?.baseNode));
 }
 

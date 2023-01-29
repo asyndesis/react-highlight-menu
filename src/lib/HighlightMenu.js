@@ -15,13 +15,13 @@ const DEFAULT_STYLES = {
 
 const PopoverWrapper = styled.div`
   pointer-events: all;
-  border: 1px solid ${({ sx }) => sx.borderColor};
-  box-shadow: ${({ sx }) => sx.boxShadow};
-  border-radius: ${({ sx }) => sx.borderRadius};
-  background: ${({ sx }) => sx.background};
+  border: 1px solid ${({ styles }) => styles.borderColor};
+  box-shadow: ${({ styles }) => styles.boxShadow};
+  border-radius: ${({ styles }) => styles.borderRadius};
+  background: ${({ styles }) => styles.background};
   min-height: 0;
-  z-index: ${({ sx }) => sx.zIndex};
-  padding: ${({ sx }) => sx.padding};
+  z-index: ${({ styles }) => styles.zIndex};
+  padding: ${({ styles }) => styles.padding};
   .popper-arrow {
     z-index: 0;
     position: absolute;
@@ -29,7 +29,7 @@ const PopoverWrapper = styled.div`
     height: 10px;
     &:after {
       content: " ";
-      background: ${({ sx }) => sx.background};
+      background: ${({ styles }) => styles.background};
       transform: rotate(45deg);
       width: 10px;
       height: 10px;
@@ -45,7 +45,7 @@ const PopoverWrapper = styled.div`
   &[data-popper-placement^="bottom"] > .popper-arrow {
     top: 0;
     :after {
-      box-shadow: -1px -1px 1px ${({ sx }) => sx.borderColor};
+      box-shadow: -1px -1px 1px ${({ styles }) => styles.borderColor};
       inset: -5px auto auto 0px;
     }
   }
@@ -54,7 +54,7 @@ const PopoverWrapper = styled.div`
     bottom: 0;
     :after {
       inset: auto 0px -5px auto;
-      box-shadow: 1px 1px 1px ${({ sx }) => sx.borderColor};
+      box-shadow: 1px 1px 1px ${({ styles }) => styles.borderColor};
     }
   }
 
@@ -62,7 +62,7 @@ const PopoverWrapper = styled.div`
     left: 0;
     :after {
       inset: auto 5px auto auto;
-      box-shadow: -1px 1px 1px ${({ sx }) => sx.borderColor};
+      box-shadow: -1px 1px 1px ${({ styles }) => styles.borderColor};
     }
   }
 
@@ -70,7 +70,7 @@ const PopoverWrapper = styled.div`
     right: -5px;
     :after {
       inset: auto auto auto auto;
-      box-shadow: 1px -1px 1px ${({ sx }) => sx.borderColor};
+      box-shadow: 1px -1px 1px ${({ styles }) => styles.borderColor};
     }
   }
 `;
@@ -122,7 +122,7 @@ const HighlightMenu = ({
   target,
   zIndex = 10,
   containerId = "react-highlight-menu-container",
-  style,
+  styles,
 }) => {
   const selection = useTextSelection(target);
   const { range } = selection || {};
@@ -185,17 +185,13 @@ const HighlightMenu = ({
               e.stopPropagation();
               e.preventDefault();
             }}
-            /* Support for emotion */
-            sx={{ ...DEFAULT_STYLES, ...style }}
+            styles={{ ...DEFAULT_STYLES, ...styles }}
           >
             <div
               /* This stupid little wrapper div just covers up the popper arrow */
               style={{ zIndex: 1, position: "relative" }}
             >
-              {
-                /* Here is where we can provide an API for the menu item clickEvents */
-                menu({ ...selection, setMenuOpen, setClipboard })
-              }
+              {menu({ ...selection, setMenuOpen, setClipboard })}
             </div>
             <div
               ref={setArrowElement}
