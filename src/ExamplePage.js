@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { HighlightMenu } from "./lib";
+import HighlightMenu from "./lib";
 import { CopyIcon, SearchIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   ChakraProvider,
@@ -145,9 +145,9 @@ function ExamplePage() {
             scenes here.
           </Text>
           <FormControl display="flex" alignItems="center" gap={3}>
-            {Object.entries(MENU_STYLES).map(([key, value]) => {
+            {Object.entries(MENU_STYLES).map(([key]) => {
               return (
-                <>
+                <React.Fragment key={key}>
                   <Switch
                     id={`switch-styles-${key}`}
                     size="lg"
@@ -161,7 +161,7 @@ function ExamplePage() {
                   >
                     {key}
                   </FormLabel>
-                </>
+                </React.Fragment>
               );
             })}
           </FormControl>

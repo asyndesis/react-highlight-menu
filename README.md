@@ -16,4 +16,32 @@ Run one of the following commands:
 
 ## Documentation
 
-Documentation to come.
+Then use it in your app:
+
+```jsx
+import React, { useState } from "react";
+import HighlightMenu from "react-select";
+
+export default function App() {
+  return (
+    <div className="app">
+      <HighlightMenu
+        target=".app"
+        menu={({ selectedHtml, setClipboard }) => (
+          <React.Fragment>
+            <button onClick={() => setClipboard(selectedHtml)} />
+          </React.Fragment>
+        )}
+      />
+    </div>
+  );
+}
+```
+
+## Props
+
+Common props you may want to specify include:
+
+- `target` - can either be a querySelector string, or a react ref.
+- `styles` - several css attributes can be applied for styling. (See demo)
+- `menu` - ({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => <>Buttons</>
