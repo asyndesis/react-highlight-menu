@@ -65,7 +65,11 @@ const useGetMenu =
           <IconButton
             colorScheme={color}
             onClick={() => {
-              window.open(`https://www.google.com/search?q=${selectedText}`);
+              window.open(
+                `https://www.google.com/search?q=${encodeURIComponent(
+                  selectedText
+                )}`
+              );
             }}
             icon={<SearchIcon />}
           />

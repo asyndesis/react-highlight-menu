@@ -1,11 +1,11 @@
 # react-highlight-menu
 
-![preview](https://asyndesis.github.io/react-highlight-menu/preview.png)
+[![NPM Version](https://shields.io/npm/v/react-highlight-menu)](https://www.npmjs.com/package/react-highlight-menu)
 
 A context menu that appears after highlighting or selecting text.
 _Similar to how the menu on Medium works._
 
-[![NPM Version](https://shields.io/npm/v/react-highlight-menu)](https://www.npmjs.com/package/react-highlight-menu)
+![preview](https://asyndesis.github.io/react-highlight-menu/preview.png)
 
 - [Demo](https://asyndesis.github.io/react-highlight-menu/) - Buttons and icons from [ChakraUI](https://chakra-ui.com/)
 
