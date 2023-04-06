@@ -11,6 +11,7 @@ const DEFAULT_STYLES = {
   zIndex: 10,
   borderRadius: "5px",
   padding: "3px",
+  margin: "10px",
 };
 
 const PopoverWrapper = styled.div`
@@ -40,6 +41,22 @@ const PopoverWrapper = styled.div`
   &[data-popper-reference-hidden="true"] {
     visibility: hidden;
     pointer-events: none;
+  }
+
+  &[data-popper-placement^="bottom"] {
+    margin-top: ${({ styles }) => styles.margin};
+  }
+
+  &[data-popper-placement^="top"] {
+    margin-bottom: ${({ styles }) => styles.margin};
+  }
+
+  &[data-popper-placement^="right"] {
+    margin-left: ${({ styles }) => styles.margin};
+  }
+
+  &[data-popper-placement^="left"] {
+    margin-right: ${({ styles }) => styles.margin};
   }
 
   &[data-popper-placement^="bottom"] > .popper-arrow {
@@ -114,6 +131,8 @@ const HighlightMenu = ({
   zIndex = 10,
   containerId = "react-highlight-menu-container",
   styles,
+  placement = "top",
+  props = {}, // any other popper.js props
 }) => {
   const selection = useTextSelection(target);
   const { range } = selection || {};
@@ -126,13 +145,14 @@ const HighlightMenu = ({
     referenceElement,
     popperElement,
     {
-      placement: "top",
       modifiers: [
         {
           name: "arrow",
           options: { element: arrowElement },
         },
       ],
+      placement,
+      ...props,
     }
   );
 

@@ -98,6 +98,7 @@ function ExamplePage() {
         target={targetClass ? ".highlight-menu" : menuRef}
         styles={MENU_STYLES[styleColor]}
         menu={fullMenu}
+        placement="top"
       />
       <Card
         gap={2}

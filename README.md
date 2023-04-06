@@ -44,6 +44,7 @@ export default function App() {
           zIndex: 10,
           borderRadius: "5px",
           padding: "3px",
+          margin: "10px", // distance from text
         }}
       />
     </div>
@@ -53,6 +54,7 @@ export default function App() {
 
 ## Props
 
-- `target` - can either be a querySelector string, or a react ref.
-- `styles` - several css attributes can be applied for styling. (See demo)
-- `menu` - ({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => <>Buttons</>
+- **target** - can either be a querySelector string, or a react ref.
+- **styles** - several css attributes can be applied for styling. (See demo)
+- **menu** - `({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => <>Buttons</>`
+- **placement** - placement relative to highlighted text. `'auto' | 'auto-start' | 'auto-end' | 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'right' | 'right-start' | 'right-end' | 'left' | 'left-start' | 'left-end'`
