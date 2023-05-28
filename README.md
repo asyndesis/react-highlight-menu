@@ -44,7 +44,6 @@ export default function App() {
           zIndex: 10,
           borderRadius: "5px",
           padding: "3px",
-          margin: "10px", // distance from text
         }}
       />
     </div>
