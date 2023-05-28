@@ -21,9 +21,9 @@ function getSelection() {
   const selectedHtml = Serializer.serializeToString(range?.cloneContents());
   const selectedText = selection?.toString();
   return {
-    baseNode: selection?.baseNode,
-    baseOffset: selection?.baseOffset,
-    extentNode: selection?.extentNode,
+    baseNode: selection?.anchorNode,
+    baseOffset: selection?.anchorOffset,
+    extentNode: selection?.focusNode,
     range,
     selectedHtml,
     selectedText,

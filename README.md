@@ -58,3 +58,4 @@ export default function App() {
 - **styles** - several css attributes can be applied for styling. (See demo)
 - **menu** - `({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => <>Buttons</>`
 - **placement** - placement relative to highlighted text. `'auto' | 'auto-start' | 'auto-end' | 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'right' | 'right-start' | 'right-end' | 'left' | 'left-start' | 'left-end'`
+- **offset** - distance in pixels from highlighted words. `[10, 10]`
