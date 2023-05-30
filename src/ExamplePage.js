@@ -13,6 +13,8 @@ import {
   FormControl,
   FormLabel,
   Switch,
+  Input,
+  Textarea,
 } from "@chakra-ui/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -175,6 +177,14 @@ function ExamplePage() {
             showStyles={true}
             styleColor={styleColor}
           />
+          <Heading size="md">Input components</Heading>
+          <Text>
+            The popover should also work inside of Input and TextArea
+            components, but has limited support for the X,Y due to browser
+            constraints.
+          </Text>
+          <Input defaultValue="Highlight my value" />
+          <Textarea defaultValue="Highlight my text" />
         </CardBody>
       </Card>
     </ChakraProvider>

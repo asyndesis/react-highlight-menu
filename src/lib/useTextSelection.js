@@ -9,20 +9,38 @@ function resolveTargets(target) {
   return [target?.current];
 }
 
-function hasSelection() {
-  const selection = window?.getSelection();
-  return !selection?.isCollapsed;
+function getSelection(e) {
+  return getDomSelection(e) || getUISelection(e);
 }
 
-function getSelection() {
-  if (!hasSelection()) return;
+/* Input and Textarea selections are rendered in the browsers native UI. We need to handle them differently */
+function getUISelection(e) {
+  const focusedElement = document?.activeElement;
+
+  const selectedText = focusedElement?.value?.substring?.(
+    focusedElement?.selectionStart,
+    focusedElement?.selectionEnd
+  );
+
+  if (!selectedText) return;
+
+  return {
+    baseNode: focusedElement,
+    extentNode: focusedElement,
+    range: focusedElement /* TODO: better support X,Y of mouse */,
+    selectedText,
+  };
+}
+
+/* Get the selection for non-UI elements */
+function getDomSelection() {
+  if (window?.getSelection?.()?.isCollapsed) return;
   const selection = window?.getSelection();
   const range = selection?.getRangeAt(0);
   const selectedHtml = Serializer.serializeToString(range?.cloneContents());
   const selectedText = selection?.toString();
   return {
     baseNode: selection?.anchorNode,
-    baseOffset: selection?.anchorOffset,
     extentNode: selection?.focusNode,
     range,
     selectedHtml,
@@ -37,16 +55,17 @@ function isTargetInSelection(targets, selection) {
 
 export function useTextSelection(target) {
   const [state, setState] = useState();
-  const updateAnchorPos = () => {
+
+  const updateAnchorPos = (e) => {
     const targets = resolveTargets(target);
-    const selection = getSelection();
+    const selection = getSelection(e);
     if (isTargetInSelection(targets, selection)) {
       setState(selection);
     }
   };
 
-  const onSelectionChange = () => {
-    const selection = getSelection();
+  const onSelectionChange = (e) => {
+    const selection = getSelection(e);
     if (!selection?.range) {
       setState({});
     }
@@ -64,6 +83,7 @@ export function useTextSelection(target) {
     document.addEventListener("scroll", onWindowScroll, {
       capture: true,
     });
+
     return () => {
       document.removeEventListener("mouseup", updateAnchorPos);
       document.removeEventListener("selectionchange", onSelectionChange);
