@@ -17,5 +17,13 @@ export default defineConfig({
       name: "React Highlight Menu",
       fileName: (format) => `react-highlight-menu.${format}.js`,
     },
+    rollupOptions: {
+      external: ["react", "react-dom"],
+      output: {
+        globals: {
+          react: "React",
+        },
+      },
+    },
   },
 });
