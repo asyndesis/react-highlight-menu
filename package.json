@@ -1,6 +1,6 @@
 {
   "name": "react-highlight-menu",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "files": [
     "dist",
     "README.md"
@@ -13,6 +13,7 @@
       "require": "./dist/react-highlight-menu.umd.js"
     }
   },
+  "types": "./dist/types/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
