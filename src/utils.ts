@@ -1,7 +1,15 @@
+import {
+  SetClipboard,
+  HMClientRect,
+  TargetSelector,
+  TargetElements,
+  SelectionDetails,
+} from "./types";
+
 /* Used to position the HiglightMenu. Transforms ranges and deals with nullish values. */
 const getPopoverCoordinates = (
   range: Range | undefined
-): HM.ClientRect | null => {
+): HMClientRect | null => {
   if (!range) return null;
   const { top, left, width, height } = range?.getBoundingClientRect() ?? {};
   return {
@@ -13,7 +21,7 @@ const getPopoverCoordinates = (
 };
 
 /* Simple clipboard support. TODO: More support for HTML text */
-const setClipboard: HM.SetClipboard = (text, onSuccess, onError) => {
+const setClipboard: SetClipboard = (text, onSuccess, onError) => {
   if (!navigator?.clipboard) return false;
   if (!text) return false;
   return navigator.clipboard
@@ -29,7 +37,7 @@ const setClipboard: HM.SetClipboard = (text, onSuccess, onError) => {
 };
 
 /* Extrapolates elements from either a React Ref object or a selector string */
-function resolveTargets(target: HM.TargetSelector): HM.TargetElements {
+function resolveTargets(target: TargetSelector): TargetElements {
   if (typeof target === "string") {
     /* Class and IDs */
     return document.querySelectorAll(target);
@@ -40,12 +48,12 @@ function resolveTargets(target: HM.TargetSelector): HM.TargetElements {
 }
 
 /* Input and Textarea selections are rendered in the browsers native UI. We need to handle them differently */
-function getSelectionDetails(): HM.SelectionDetails {
+function getSelectionDetails(): SelectionDetails {
   return getDomSelectionDetails() || getUISelection();
 }
 
 /* Get the selection for browser native-UI elements */
-function getUISelection(): HM.SelectionDetails {
+function getUISelection(): SelectionDetails {
   const focusedElement = document?.activeElement as HTMLInputElement;
 
   const selectedText = focusedElement?.value?.substring?.(
@@ -53,7 +61,7 @@ function getUISelection(): HM.SelectionDetails {
     focusedElement?.selectionEnd || 0
   );
 
-  const selectionDetails: HM.SelectionDetails = {
+  const selectionDetails: SelectionDetails = {
     baseNode: focusedElement,
     extentNode: focusedElement,
     range: focusedElement as unknown as Range,
@@ -64,7 +72,7 @@ function getUISelection(): HM.SelectionDetails {
 }
 
 /* Get the selection for non-UI elements */
-function getDomSelectionDetails(): HM.SelectionDetails {
+function getDomSelectionDetails(): SelectionDetails {
   if (window?.getSelection?.()?.isCollapsed) return null;
   const Serializer = new XMLSerializer();
   const selection = window?.getSelection();
@@ -72,7 +80,7 @@ function getDomSelectionDetails(): HM.SelectionDetails {
   const selectedNode = range?.cloneContents() as Node;
   const selectedHtml = Serializer.serializeToString(selectedNode);
   const selectedText = selection?.toString();
-  const selectionDetails: HM.SelectionDetails = {
+  const selectionDetails: SelectionDetails = {
     baseNode: selection?.anchorNode,
     extentNode: selection?.focusNode,
     range,
@@ -82,10 +90,10 @@ function getDomSelectionDetails(): HM.SelectionDetails {
   return selectionDetails;
 }
 
-/* Is the target we are selecting within the `HM.TargetElements`? */
+/* Is the target we are selecting within the `TargetElements`? */
 function isSelectionWithinTarget(
-  targets: HM.TargetElements,
-  selection: HM.SelectionDetails
+  targets: TargetElements,
+  selection: SelectionDetails
 ): boolean {
   if (!targets?.length) return false;
   return Array.from(targets)?.some((t) =>

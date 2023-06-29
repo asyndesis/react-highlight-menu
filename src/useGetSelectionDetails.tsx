@@ -4,9 +4,10 @@ import {
   resolveTargets,
   isSelectionWithinTarget,
 } from ".";
+import { SelectionDetails, TargetSelector } from "./types";
 
-export function useGetSelectionDetails(target: HM.TargetSelector) {
-  const [state, setState] = useState<HM.SelectionDetails>();
+export function useGetSelectionDetails(target: TargetSelector) {
+  const [state, setState] = useState<SelectionDetails>();
 
   const onSelectionChange = () => {
     const selection = getSelectionDetails();

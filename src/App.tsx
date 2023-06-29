@@ -19,6 +19,8 @@ import {
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+import { MenuArgs } from "./types";
+
 const MENU_STYLES: Record<string, CSSProperties> = {
   black: {
     borderColor: "black",
@@ -48,7 +50,7 @@ const MENU_STYLES: Record<string, CSSProperties> = {
 
 const useGetMenu =
   (styleColor: any) =>
-  ({ selectedText = "", setMenuOpen, setClipboard }: HM.MenuArgs) => {
+  ({ selectedText = "", setMenuOpen, setClipboard }: MenuArgs) => {
     const color = styleColor === "white" ? null : styleColor;
     return (
       <Flex gap="1">

@@ -3,11 +3,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), dts({ insertTypesEntry: true, copyDtsFiles: true })],
+  plugins: [react()],
   test: {
     environment: "jsdom",
     globals: true,
@@ -17,8 +16,9 @@ export default defineConfig({
     outDir: "dist", // Specify the output directory
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "React Highlight Menu",
-      fileName: (format) => `react-highlight-menu.${format}.js`,
+      name: "ReactHighlightMenu",
+      formats: ["es", "cjs", "umd", "iife"],
+      fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

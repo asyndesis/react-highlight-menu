@@ -17,6 +17,8 @@ import {
 } from "@floating-ui/react";
 import { useGetSelectionDetails, getPopoverCoordinates, setClipboard } from ".";
 
+import { MenuArgs, SetMenuOpen, TargetSelector } from "./types";
+
 const ARROW_WIDTH = 10;
 const ARROW_HEIGHT = 5;
 
@@ -41,8 +43,8 @@ const getMenuStyles = (styles: CSSProperties = {}) => {
 };
 
 type MainArgs = {
-  target: HM.TargetSelector;
-  menu: (props: HM.MenuArgs) => React.ReactNode;
+  target: TargetSelector;
+  menu: (props: MenuArgs) => React.ReactNode;
   styles?: CSSProperties;
   offset?: number;
   allowedPlacements: Array<Placement>;
@@ -59,7 +61,7 @@ function HighlightMenu({
   ...props
 }: MainArgs) {
   const selection = useGetSelectionDetails(target);
-  const [menuOpen, setMenuOpen] = useState<HM.SetMenuOpen>(null);
+  const [menuOpen, setMenuOpen] = useState<SetMenuOpen>(null);
   const clientRect = getPopoverCoordinates(selection?.range);
   const arrowRef = useRef(null);
   const menuStyles = getMenuStyles(styles);

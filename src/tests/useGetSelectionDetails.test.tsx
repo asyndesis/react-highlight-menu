@@ -3,6 +3,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { useGetSelectionDetails } from "../";
 import "@testing-library/jest-dom";
 
+import { TargetSelector } from "../types";
+
 const HIGLIGHT_RANGE = { START: 0, END: 5 };
 const TARGET_CLASS_NAME = "testing-target-class";
 const TEXT_CONTENT = "Here is some example selected text.";
@@ -12,7 +14,7 @@ const TEXT_SELECTION = TEXT_CONTENT.substring(
 );
 
 /* Create a component that dumps the hook state to the dom so that we can actually test it */
-function SelectionDetailsComponent({ target }: { target: HM.TargetSelector }) {
+function SelectionDetailsComponent({ target }: { target: TargetSelector }) {
   const selectionDetails = useGetSelectionDetails(target);
   const { selectedText } = selectionDetails ?? {};
 
