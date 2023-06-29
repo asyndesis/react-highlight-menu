@@ -20,31 +20,45 @@ Then use it in your app:
 
 ```jsx
 import React from "react";
-import HighlightMenu from "react-highlight-menu";
+/* Library comes with some super basic MenuButtons: */
+import { HighlightMenu, MenuButton } from "react-highlight-menu";
 
 export default function App() {
   return (
     <div className="app">
       <HighlightMenu
         target=".app"
-        menu={({ selectedText, setClipboard, setMenuOpen }) => (
-          <React.Fragment>
-            <button type="button" onClick={() => setClipboard(selectedText)}>
-              📋
-            </button>
-            <button type="button" onClick={() => setMenuOpen(false)}>
-              ❌
-            </button>
-          </React.Fragment>
+        allowedPlacements={["top", "bottom"]}
+        menu={({ selectedText = "", setClipboard, setMenuOpen }) => (
+          <>
+            <MenuButton
+              title="Copy to clipboard"
+              icon="clipboard"
+              onClick={() =>
+                setClipboard(selectedText, () => {
+                  alert("Copied to clipboard");
+                })
+              }
+            />
+
+            <MenuButton
+              title="Search Google"
+              onClick={() => {
+                window.open(
+                  `https://www.google.com/search?q=${encodeURIComponent(
+                    selectedText
+                  )}`
+                );
+              }}
+              icon="magnifying-glass"
+            />
+            <MenuButton
+              title="Close menu"
+              onClick={() => setMenuOpen(false)}
+              icon="x-mark"
+            />
+          </>
         )}
-        styles={{
-          borderColor: "black",
-          background: "black",
-          boxShadow: "0px 5px 5px 0px rgba(0, 0, 0, 0.15)",
-          zIndex: 10,
-          borderRadius: "5px",
-          padding: "3px",
-        }}
       />
     </div>
   );
@@ -56,5 +70,6 @@ export default function App() {
 - **target** - can either be a querySelector string, or a react ref.
 - **styles** - several css attributes can be applied for styling. (See demo)
 - **menu** - `({ selectedHtml, selectedText, setMenuOpen, setClipboard }) => <>Buttons</>`
-- **placement** - placement relative to highlighted text. `'auto' | 'auto-start' | 'auto-end' | 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'right' | 'right-start' | 'right-end' | 'left' | 'left-start' | 'left-end'`
-- **offset** - distance in pixels from highlighted words. `[10, 10]`
+- **allowedPlacements** - array of allowed placements `-'auto' | 'auto-start' | 'auto-end' | 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'right' | 'right-start' | 'right-end' | 'left' | 'left-start' | 'left-end'`
+- **offset** - distance in pixels from highlighted words. `10`
+- **zIndex** - zIndex of the popover `999999999`

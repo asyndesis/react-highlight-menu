@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import HighlightMenu from "./lib";
+import React, { useRef, useState, CSSProperties } from "react";
+import { HighlightMenu } from "./lib";
 import { CopyIcon, SearchIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   ChakraProvider,
@@ -19,10 +19,10 @@ import {
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const MENU_STYLES = {
+const MENU_STYLES: Record<string, CSSProperties> = {
   black: {
     borderColor: "black",
-    background: "black",
+    backgroundColor: "black",
     boxShadow: "0px 5px 5px 0px rgba(0, 0, 0, 0.15)",
     zIndex: 10,
     borderRadius: "5px",
@@ -30,7 +30,7 @@ const MENU_STYLES = {
   },
   white: {
     borderColor: "white",
-    background: "white",
+    backgroundColor: "white",
     boxShadow: "0px 5px 5px 0px rgba(0, 0, 0, 0.15)",
     zIndex: 10,
     borderRadius: "5px",
@@ -38,7 +38,7 @@ const MENU_STYLES = {
   },
   pink: {
     borderColor: "#D53F8C",
-    background: "#D53F8C",
+    backgroundColor: "#D53F8C",
     boxShadow: "0px 5px 5px 0px rgba(0, 0, 0, 0.15)",
     zIndex: 10,
     borderRadius: "5px",
@@ -47,13 +47,14 @@ const MENU_STYLES = {
 };
 
 const useGetMenu =
-  (styleColor) =>
-  ({ selectedText, setMenuOpen, setClipboard }) => {
+  (styleColor: any) =>
+  ({ selectedText = "", setMenuOpen, setClipboard }: HM.MenuArgs) => {
     const color = styleColor === "white" ? null : styleColor;
     return (
       <Flex gap="1">
         <Tooltip label="Copy text" hasArrow>
           <IconButton
+            aria-label="Copy to clipboard"
             colorScheme={color}
             onClick={async () => {
               setClipboard(selectedText, () => {
@@ -65,6 +66,7 @@ const useGetMenu =
         </Tooltip>
         <Tooltip label="Search google" hasArrow>
           <IconButton
+            aria-label="Search google"
             colorScheme={color}
             onClick={() => {
               window.open(
@@ -78,6 +80,7 @@ const useGetMenu =
         </Tooltip>
         <Tooltip label="Close the menu" hasArrow>
           <IconButton
+            aria-label="Close menu"
             colorScheme={color}
             onClick={() => {
               setMenuOpen(false);
@@ -89,8 +92,8 @@ const useGetMenu =
     );
   };
 
-function ExamplePage() {
-  const menuRef = useRef();
+function App() {
+  const menuRef = useRef<HTMLDivElement>(null);
   const [targetClass, setTargetClass] = useState(true);
   const [styleColor, setStyleColor] = useState("black");
   const fullMenu = useGetMenu(styleColor);
@@ -100,7 +103,7 @@ function ExamplePage() {
         target={targetClass ? ".highlight-menu" : menuRef}
         styles={MENU_STYLES[styleColor]}
         menu={fullMenu}
-        placement="top"
+        allowedPlacements={["top", "bottom"]}
       />
       <Card
         gap={2}
@@ -159,7 +162,7 @@ function ExamplePage() {
                     id={`switch-styles-${key}`}
                     size="lg"
                     isChecked={styleColor === key}
-                    onChange={(e) => setStyleColor(key)}
+                    onChange={() => setStyleColor(key)}
                   />
                   <FormLabel
                     htmlFor={`switch-styles-${key}`}
@@ -191,13 +194,21 @@ function ExamplePage() {
   );
 }
 
+type CodeArgs = {
+  name?: string;
+  targetClass?: boolean;
+  showMenu?: boolean;
+  showStyles?: boolean;
+  styleColor?: string;
+};
+
 const Code = ({
   name,
   targetClass,
   showMenu = false,
   showStyles = false,
   styleColor = "black",
-}) => {
+}: CodeArgs) => {
   return (
     <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
       {`const ${name} = () => {
@@ -246,4 +257,4 @@ const Code = ({
   );
 };
 
-export default ExamplePage;
+export default App;
