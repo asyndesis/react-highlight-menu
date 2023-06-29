@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { useGetSelectionDetails } from "../lib";
+import { useGetSelectionDetails } from "../";
 import "@testing-library/jest-dom";
 
 const HIGLIGHT_RANGE = { START: 0, END: 5 };

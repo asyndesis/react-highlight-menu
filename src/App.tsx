@@ -1,5 +1,5 @@
 import React, { useRef, useState, CSSProperties } from "react";
-import { HighlightMenu } from "./lib";
+import { HighlightMenu } from ".";
 import { CopyIcon, SearchIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   ChakraProvider,
