@@ -1,6 +1,7 @@
 # react-highlight-menu
 
 [![NPM Version](https://shields.io/npm/v/react-highlight-menu)](https://www.npmjs.com/package/react-highlight-menu)
+![Tests](https://github.com/asyndesis/react-highlight-menu/actions/workflows/tests.js.yml/badge.svg)
 
 A context menu that appears after highlighting or selecting text.
 _Similar to how the menu on Medium works._
