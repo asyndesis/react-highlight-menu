@@ -16,8 +16,14 @@ import {
   Placement,
 } from "@floating-ui/react";
 import { useGetSelectionDetails, getPopoverCoordinates, setClipboard } from ".";
-
+import {
+  MENU_ANCHOR_CLASS_NAME,
+  MENU_ARROW_CLASS_NAME,
+  MENU_CLASS_NAME,
+  MENU_POPOVER_CLASS_NAME,
+} from "./classNames";
 import { MenuArgs, SetMenuOpen, TargetSelector } from "./types";
+import { clsx } from "clsx";
 
 const ARROW_WIDTH = 10;
 const ARROW_HEIGHT = 5;
@@ -49,6 +55,13 @@ type MainArgs = {
   offset?: number;
   allowedPlacements: Array<Placement>;
   zIndex?: number;
+  className?: string;
+  withoutStyles?: boolean;
+  classNames?: {
+    menu: string;
+    popover: string;
+    arrow: string;
+  };
 };
 
 function HighlightMenu({
@@ -58,14 +71,16 @@ function HighlightMenu({
   styles,
   allowedPlacements,
   zIndex = 999999999,
+  withoutStyles = false,
+  classNames,
   ...props
 }: MainArgs) {
   const selection = useGetSelectionDetails(target);
   const [menuOpen, setMenuOpen] = useState<SetMenuOpen>(null);
   const clientRect = getPopoverCoordinates(selection?.range);
   const arrowRef = useRef(null);
-  const menuStyles = getMenuStyles(styles);
-  const borderWidth = menuStyles.borderWidth as number;
+  const menuStyles = withoutStyles ? {} : getMenuStyles(styles);
+  const borderWidth = withoutStyles ? 0 : (menuStyles.borderWidth as number);
 
   /* Floating menu hook initiations */
   const { refs, floatingStyles, context } = useFloating({
@@ -102,19 +117,20 @@ function HighlightMenu({
   return (
     <>
       <div
+        className={MENU_ANCHOR_CLASS_NAME}
         ref={refs.setReference}
-        {...getReferenceProps()}
         style={{
           ...clientRect,
           position: "fixed",
           userSelect: "none",
           pointerEvents: "none",
         }}
+        {...getReferenceProps()}
       />
       {menuOpen && selection && (
         <FloatingFocusManager context={context} modal={false} initialFocus={-1}>
           <div
-            className="Popover"
+            className={clsx(MENU_POPOVER_CLASS_NAME, classNames?.popover)}
             ref={refs.setFloating}
             style={{ ...floatingStyles, zIndex }}
             aria-labelledby={headingId}
@@ -128,10 +144,15 @@ function HighlightMenu({
               e.preventDefault();
             }}
           >
-            <div {...props} style={menuStyles}>
+            <div
+              className={clsx(MENU_CLASS_NAME, classNames?.menu)}
+              style={menuStyles}
+              {...props}
+            >
               {menu({ ...selection, setMenuOpen, setClipboard })}
             </div>
             <FloatingArrow
+              className={clsx(MENU_ARROW_CLASS_NAME, classNames?.arrow)}
               ref={arrowRef}
               context={context}
               width={ARROW_WIDTH}

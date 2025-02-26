@@ -1,6 +1,12 @@
 import React, { useRef, useState, CSSProperties } from "react";
-import { HighlightMenu } from ".";
-import { CopyIcon, SearchIcon, CloseIcon } from "@chakra-ui/icons";
+import { HighlightMenu, MenuButton } from ".";
+import {
+  CopyIcon,
+  SearchIcon,
+  CloseIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@chakra-ui/icons";
 import {
   ChakraProvider,
   IconButton,
@@ -16,7 +22,12 @@ import {
   Input,
   Textarea,
   Box,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
 } from "@chakra-ui/react";
+import { Global } from "@emotion/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -134,145 +145,88 @@ const GithubCorner = () => {
   );
 };
 
-function App() {
+// Example components
+const TargetExample = () => {
+  const [useTargetClass, setUseTargetClass] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [targetClass, setTargetClass] = useState(true);
-  const [styleColor, setStyleColor] = useState("black");
-  const fullMenu = useGetMenu(styleColor);
+  const fullMenu = useGetMenu("white");
+
   return (
-    <ChakraProvider>
-      <GithubCorner />
+    <Box className="target-example">
       <HighlightMenu
-        target={targetClass ? ".highlight-menu" : menuRef}
-        styles={MENU_STYLES[styleColor]}
+        target={useTargetClass ? ".target-example" : menuRef}
+        styles={MENU_STYLES["white"]}
         menu={fullMenu}
         allowedPlacements={["top", "bottom"]}
       />
-      <Box py={4}>
-        <Card
-          gap={2}
-          mx={"auto"}
-          maxWidth="720"
-          ref={menuRef}
-          className="highlight-menu"
-        >
-          <CardBody display="flex" gap="4" flexDirection="column">
-            <Heading size="lg">React highlight menu demos</Heading>
-            <Text>
-              Highlight text anywhere on the page to reveal the context menu.
-            </Text>
-            <Heading size="md">The target property</Heading>
-            <Text>
-              The target property supports both css-selectors and refs.
-            </Text>
-            <FormControl display="flex" alignItems="center" gap={3}>
-              <Switch
-                id="switch-target-1"
-                size="lg"
-                isChecked={targetClass}
-                onChange={(e) => setTargetClass(e.target.checked)}
-              />
-              <FormLabel htmlFor="switch-target-1" mb="0" fontWeight="bold">
-                target=".highlight-menu"
-              </FormLabel>
-              <Switch
-                id="switch-target-2"
-                size="lg"
-                isChecked={!targetClass}
-                onChange={(e) => setTargetClass(!e.target.checked)}
-              />
-              <FormLabel htmlFor="switch-target-2" mb="0" fontWeight="bold">
-                {`target={ref}`}
-              </FormLabel>
-            </FormControl>
-            <Code name="TargetExample" targetClass={targetClass} />
-            <Heading size="md">The menu property</Heading>
-            <Text>
-              The menu property provides the state of the component through
-              function arguments. A <strong>setClipboard</strong> utility
-              function is also provided.
-            </Text>
-            <Code name="MenuExample" showMenu={true} />
-            <Heading size="md">The styles property</Heading>
-            <Text>
-              Change the look of the popover with several style properties. Note
-              that buttons are not included. We are using ChakraUI behind the
-              scenes here.
-            </Text>
-            <FormControl display="flex" alignItems="center" gap={3}>
-              {Object.entries(MENU_STYLES).map(([key]) => {
-                return (
-                  <React.Fragment key={key}>
-                    <Switch
-                      id={`switch-styles-${key}`}
-                      size="lg"
-                      isChecked={styleColor === key}
-                      onChange={() => setStyleColor(key)}
-                    />
-                    <FormLabel
-                      htmlFor={`switch-styles-${key}`}
-                      fontWeight="bold"
-                      mb={0}
-                    >
-                      {key}
-                    </FormLabel>
-                  </React.Fragment>
-                );
-              })}
-            </FormControl>
-            <Code
-              name="StylesExample"
-              showStyles={true}
-              styleColor={styleColor}
-            />
-            <Heading size="md">Input components</Heading>
-            <Text>
-              The popover should also work inside of Input and TextArea
-              components, but has limited support for the X,Y due to browser
-              constraints.
-            </Text>
-            <Input defaultValue="Highlight my value" />
-            <Textarea defaultValue="Highlight my text" />
-          </CardBody>
-        </Card>
-      </Box>
-    </ChakraProvider>
-  );
-}
+      <Text mb={4}>
+        The target property supports both css-selectors and refs.
+      </Text>
+      <FormControl display="flex" alignItems="center" gap={3} mb={4}>
+        <Switch
+          id="switch-target-1"
+          size="lg"
+          isChecked={useTargetClass}
+          onChange={(e) => setUseTargetClass(e.target.checked)}
+        />
+        <FormLabel htmlFor="switch-target-1" mb="0" fontWeight="bold">
+          target=".target-example"
+        </FormLabel>
+        <Switch
+          id="switch-target-2"
+          size="lg"
+          isChecked={!useTargetClass}
+          onChange={(e) => setUseTargetClass(!e.target.checked)}
+        />
+        <FormLabel htmlFor="switch-target-2" mb="0" fontWeight="bold">
+          {`target={ref}`}
+        </FormLabel>
+      </FormControl>
 
-type CodeArgs = {
-  name?: string;
-  targetClass?: boolean;
-  showMenu?: boolean;
-  showStyles?: boolean;
-  styleColor?: string;
-};
-
-const Code = ({
-  name,
-  targetClass,
-  showMenu = false,
-  showStyles = false,
-  styleColor = "black",
-}: CodeArgs) => {
-  return (
-    <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
-      {`const ${name} = () => {
-  ${!targetClass ? "const menuRef = useRef();" : "/* Using a css selector */"}
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+        {`const TargetExample = () => {
+  ${
+    !useTargetClass ? "const menuRef = useRef();" : "/* Using a css selector */"
+  }
   return (
     <HighlightMenu
-      ${
-        showStyles
-          ? `styles={${JSON.stringify(MENU_STYLES[styleColor], null, 8).replace(
-              "}",
-              "      }"
-            )}}`
-          : "styles={{/* ...styles */}}"
-      }
-      target=${targetClass ? '".highlight-menu"' : "{menuRef}"}
-      ${
-        showMenu
-          ? `menu={({
+      styles={{/* ...styles */}}
+      target=${useTargetClass ? '".target-example"' : "{menuRef}"}
+      menu={()=><>Buttons go here</>}
+    />
+    <div ref={menuRef}>
+      Selecting this text will show the menu!
+    </div>
+  );
+};`}
+      </SyntaxHighlighter>
+    </Box>
+  );
+};
+
+const MenuExample = () => {
+  const fullMenu = useGetMenu("white");
+
+  return (
+    <Box className="menu-example">
+      <HighlightMenu
+        target=".menu-example"
+        styles={MENU_STYLES["white"]}
+        menu={fullMenu}
+        allowedPlacements={["top", "bottom"]}
+      />
+      <Text mb={4}>
+        The menu property provides the state of the component through function
+        arguments. A <strong>setClipboard</strong> utility function is also
+        provided.
+      </Text>
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+        {`const MenuExample = () => {
+  return (
+    <HighlightMenu
+      styles={{/* ...styles */}}
+      target=".menu-example"
+      menu={({
         selectedText,
         setMenuOpen,
         setClipboard, 
@@ -290,17 +244,326 @@ const Code = ({
           <CloseButton
             onClick={() => setMenuOpen(false)}
           />
-        </Flex>`
-          : "menu={()=><>Buttons go here</>}"
+        </Flex>
       }
     />
-    <div ref={menuRef}>
-      Selecting this text will show the menu!
+  );
+};`}
+      </SyntaxHighlighter>
+    </Box>
+  );
+};
+
+const StylesExample = () => {
+  const [styleColor, setStyleColor] = useState("pink");
+  const fullMenu = useGetMenu(styleColor);
+
+  return (
+    <Box className="styles-example">
+      <HighlightMenu
+        target=".styles-example"
+        styles={MENU_STYLES[styleColor]}
+        menu={fullMenu}
+        allowedPlacements={["top", "bottom"]}
+      />
+      <Text mb={4}>
+        Change the look of the popover with several style properties. Note that
+        buttons are not included. We are using ChakraUI behind the scenes here.
+      </Text>
+      <FormControl display="flex" alignItems="center" gap={3} mb={4}>
+        {Object.entries(MENU_STYLES).map(([key]) => {
+          return (
+            <React.Fragment key={key}>
+              <Switch
+                id={`switch-styles-${key}`}
+                size="lg"
+                isChecked={styleColor === key}
+                onChange={() => setStyleColor(key)}
+              />
+              <FormLabel
+                htmlFor={`switch-styles-${key}`}
+                fontWeight="bold"
+                mb={0}
+              >
+                {key}
+              </FormLabel>
+            </React.Fragment>
+          );
+        })}
+      </FormControl>
+
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+        {`const StylesExample = () => {
+  return (
+    <HighlightMenu
+      styles={${JSON.stringify(MENU_STYLES[styleColor], null, 8).replace(
+        "}",
+        "      }"
+      )}}
+      target=".styles-example"
+      menu={()=><>Buttons go here</>}
+    />
+  );
+};`}
+      </SyntaxHighlighter>
+    </Box>
+  );
+};
+
+const InputExample = () => {
+  const fullMenu = useGetMenu("white");
+
+  return (
+    <Box className="input-example">
+      <HighlightMenu
+        target=".input-example"
+        styles={MENU_STYLES["white"]}
+        menu={fullMenu}
+        allowedPlacements={["top", "bottom"]}
+      />
+      <Text mb={4}>
+        The popover should also work inside of Input and TextArea components,
+        but has limited support for the X,Y due to browser constraints.
+      </Text>
+      <Input defaultValue="Highlight my value" mb={4} />
+      <Textarea defaultValue="Highlight my text" />
+
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus} mt={4}>
+        {`const InputExample = () => {
+  return (
+    <>
+      <Input defaultValue="Highlight my value" />
+      <Textarea defaultValue="Highlight my text" />
+    </>
+  );
+};`}
+      </SyntaxHighlighter>
+    </Box>
+  );
+};
+
+const TailwindExample = () => {
+  return (
+    <Box className="custom-class-names-example">
+      <Global
+        styles={`
+          /* Minimal Tailwind-like styles for the demo */
+          .flex {
+            display: flex;
+          }
+          .gap-1 {
+            gap: 0.25rem;
+          }
+          .p-1 {
+            padding: 0.25rem;
+          }
+          .p-2 {
+            padding: 0.5rem;
+          }
+          .rounded-md {
+            border-radius: 0.375rem;
+          }
+          .bg-white {
+            background-color: white;
+          }
+          .bg-gray-100 {
+            background-color: #f3f4f6;
+          }
+          .text-gray-700 {
+            color: #374151;
+          }
+          .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          }
+          .border {
+            border-width: 1px;
+          }
+          .border-gray-200 {
+            border-color: #e5e7eb;
+          }
+          .hover\\:bg-gray-100:hover {
+            background-color: #f3f4f6;
+          }
+          .fill-white {
+            fill: white;
+          }
+        `}
+      />
+      <HighlightMenu
+        target=".custom-class-names-example"
+        withoutStyles={true}
+        classNames={{
+          menu: "flex gap-1 p-1",
+          popover: "bg-white shadow-lg rounded-md border border-gray-200",
+          arrow: "fill-white",
+        }}
+        menu={({ selectedText = "", setClipboard, setMenuOpen }) => (
+          <>
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Copy to clipboard"
+              icon="clipboard"
+              onClick={() =>
+                setClipboard(selectedText, () => {
+                  alert("Copied to clipboard");
+                })
+              }
+            />
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Search Google"
+              onClick={() => {
+                window.open(
+                  `https://www.google.com/search?q=${encodeURIComponent(
+                    selectedText
+                  )}`
+                );
+              }}
+              icon="magnifying-glass"
+            />
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Close menu"
+              onClick={() => setMenuOpen(false)}
+              icon="x-mark"
+            />
+          </>
+        )}
+        allowedPlacements={["top", "bottom"]}
+      />
+      <Text mb={4}>
+        This example uses the built-in <strong>MenuButton</strong> component
+        with custom classNames. But you can use normal talwind buttons if you
+        prefer that. The <strong>withoutStyles</strong> can be set to true if
+        the native styles are interfering with your custom classes.
+      </Text>
+      <SyntaxHighlighter language="jsx" style={vscDarkPlus}>
+        {`import { HighlightMenu, MenuButton } from "react-highlight-menu";
+
+const TailwindStyleExample = () => {
+  return (
+    <div className="tailwind-menu-example">
+      <HighlightMenu
+        classNames={{
+          menu: "flex gap-1 p-1",
+          popover: "bg-white shadow-lg rounded-md border border-gray-200",
+          arrow: "fill-white",
+        }}
+        target=".tailwind-menu-example"
+        withoutStyles={true}
+        menu={({ selectedText = "", setClipboard, setMenuOpen }) => (
+          <>
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Copy to clipboard"
+              icon="clipboard"
+              onClick={() =>
+                setClipboard(selectedText, () => {
+                  alert("Copied to clipboard");
+                })
+              }
+            />
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Search Google"
+              onClick={() => {
+                window.open(
+                  \`https://www.google.com/search?q=\${encodeURIComponent(
+                    selectedText
+                  )}\`
+                );
+              }}
+              icon="magnifying-glass"
+            />
+            <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
+              title="Close menu"
+              onClick={() => setMenuOpen(false)}
+              icon="x-mark"
+            />
+          </>
+        )}
+        allowedPlacements={["top", "bottom"]}
+      />
     </div>
   );
 };`}
-    </SyntaxHighlighter>
+      </SyntaxHighlighter>
+    </Box>
   );
 };
+
+function App() {
+  const accordionItems = [
+    {
+      title: "Target Property",
+      component: <TargetExample />,
+    },
+    {
+      title: "Menu Properties",
+      component: <MenuExample />,
+    },
+    {
+      title: "Style with styles prop",
+      component: <StylesExample />,
+    },
+    {
+      title: "Style with Tailwind",
+      component: <TailwindExample />,
+    },
+    {
+      title: "Input Fields Example",
+      component: <InputExample />,
+    },
+  ];
+
+  return (
+    <ChakraProvider>
+      <GithubCorner />
+      <Global
+        styles={`
+          code {
+            padding: 0.25rem;
+            border-radius: 0.375rem;
+          }
+        `}
+      />
+
+      <Box py={4}>
+        <Card gap={2} mx={"auto"} maxWidth="720">
+          <CardBody display="flex" gap="4" flexDirection="column">
+            <Heading size="lg">React highlight menu demos</Heading>
+            <Text mb={4}>
+              Open an accordion and highlight text anywhere on the page to
+              reveal the context menu.
+            </Text>
+            <Accordion defaultIndex={[0]}>
+              {accordionItems.map((item, index) => (
+                <AccordionItem key={index}>
+                  {({ isExpanded }) => (
+                    <>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left" fontWeight="bold">
+                          {item.title}
+                        </Box>
+                        {isExpanded ? (
+                          <ChevronUpIcon fontSize="30px" />
+                        ) : (
+                          <ChevronDownIcon fontSize="30px" />
+                        )}
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>{item.component}</AccordionPanel>
+                    </>
+                  )}
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardBody>
+        </Card>
+      </Box>
+    </ChakraProvider>
+  );
+}
 
 export default App;

@@ -21,18 +21,25 @@ Then use it in your app:
 
 ```jsx
 import React from "react";
-/* Library comes with some super basic MenuButtons: */
+/* Library comes with some super basic MenuButtons. You can import default styles and use them as a starting point.
+The example below shows how to use the `classNames` prop to style the menu, popover, and arrow elements with something like Tailwind.*/
 import { HighlightMenu, MenuButton } from "react-highlight-menu";
 
 export default function App() {
   return (
-    <div className="app">
+    <div className="tailwind-menu-example">
       <HighlightMenu
-        target=".app"
-        allowedPlacements={["top", "bottom"]}
+        classNames={{
+          menu: "flex gap-1 p-1",
+          popover: "bg-white shadow-lg rounded-md border border-gray-200",
+          arrow: "fill-white",
+        }}
+        target=".tailwind-menu-example"
+        withoutStyles={true}
         menu={({ selectedText = "", setClipboard, setMenuOpen }) => (
           <>
             <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
               title="Copy to clipboard"
               icon="clipboard"
               onClick={() =>
@@ -41,8 +48,8 @@ export default function App() {
                 })
               }
             />
-
             <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
               title="Search Google"
               onClick={() => {
                 window.open(
@@ -54,12 +61,14 @@ export default function App() {
               icon="magnifying-glass"
             />
             <MenuButton
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-700"
               title="Close menu"
               onClick={() => setMenuOpen(false)}
               icon="x-mark"
             />
           </>
         )}
+        allowedPlacements={["top", "bottom"]}
       />
     </div>
   );
@@ -74,3 +83,23 @@ export default function App() {
 - **allowedPlacements** - array of allowed placements `-'auto' | 'auto-start' | 'auto-end' | 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'right' | 'right-start' | 'right-end' | 'left' | 'left-start' | 'left-end'`
 - **offset** - distance in pixels from highlighted words. `10`
 - **zIndex** - zIndex of the popover `999999999`
+
+## Customization
+
+- **withoutStyles** - if true, the menu will be only styled with props that help it to function. And we the following classnames can be targeted for styling:
+  - `.rhm-popover` - for the popover element
+  - `.rhm-menu` - for the menu element
+  - `.rhm-button` - for the button element
+  - `.rhm-arrow` - for the arrow element
+  - `.rhm-anchor` - for the anchor element
+- **classNames** - an object where classnames can be passed to the menu, popover, and arrow elements.
+  - `menu` - for the menu element
+  - `popover` - for the popover element
+  - `arrow` - for the arrow element
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
