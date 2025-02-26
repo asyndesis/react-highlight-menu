@@ -1,5 +1,6 @@
 import React from "react";
-
+import { MENU_BUTTON_CLASS_NAME } from "./classNames";
+import { clsx } from "clsx";
 const ICONS: Record<string, React.ReactNode> = {
   "magnifying-glass": (
     <svg
@@ -54,34 +55,7 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-interface MenuButtonProps {
-  onClick?: () => void;
-  disabled?: boolean;
-  children?: React.ReactNode;
-  style?: React.CSSProperties;
-  svg?: React.ReactNode;
-  icon?: string;
-  title?: string;
-}
-
-const MenuButton: React.FC<MenuButtonProps> = ({
-  children,
-  style,
-  svg,
-  icon,
-  ...props
-}) => {
-  const mergedButtonStyles = { ...defaultStyles, ...style };
-  const theIcon = icon ? ICONS?.[icon] : svg;
-  return (
-    <button style={mergedButtonStyles} {...props}>
-      {theIcon}
-      {children}
-    </button>
-  );
-};
-
-const defaultStyles: React.CSSProperties = {
+export const DEFAULT_BUTTON_STYLES: React.CSSProperties = {
   backgroundColor: "#3b82f6",
   color: "#fff",
   fontWeight: "bold",
@@ -92,6 +66,40 @@ const defaultStyles: React.CSSProperties = {
   gap: "0.5rem",
   cursor: "pointer",
   border: "none",
+};
+
+interface MenuButtonProps {
+  onClick?: () => void;
+  disabled?: boolean;
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+  svg?: React.ReactNode;
+  icon?: string;
+  title?: string;
+  className?: string;
+  withDefaultStyles?: boolean;
+}
+
+const MenuButton: React.FC<MenuButtonProps> = ({
+  children,
+  svg,
+  icon,
+  className,
+  style,
+  ...props
+}) => {
+  const theIcon = icon ? ICONS?.[icon] : svg;
+
+  return (
+    <button
+      style={style}
+      className={clsx(MENU_BUTTON_CLASS_NAME, className)}
+      {...props}
+    >
+      {theIcon}
+      {children}
+    </button>
+  );
 };
 
 export default MenuButton;
