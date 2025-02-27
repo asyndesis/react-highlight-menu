@@ -89,7 +89,7 @@ export default function App() {
   - `popover` - for the popover element
   - `arrow` - for the arrow element
 
-## These classnames are also available for styling as well
+## These classnames are also targetable for styling if you need more control over the styles
 
 - `.rhm-popover` - for the popover element
 - `.rhm-menu` - for the menu element
