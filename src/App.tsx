@@ -152,7 +152,7 @@ const TargetExample = () => {
   const fullMenu = useGetMenu("white");
 
   return (
-    <Box className="target-example">
+    <Box className="target-example" ref={menuRef}>
       <HighlightMenu
         target={useTargetClass ? ".target-example" : menuRef}
         styles={MENU_STYLES["white"]}
